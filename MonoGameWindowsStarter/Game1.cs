@@ -16,9 +16,8 @@ namespace MonoGameWindowsStarter
         //Structs are fast thats why the vectors are structs
         Vector2 ballPosition = Vector2.Zero; //Struct not a class
         Vector2 ballVelocity;
-        Texture2D paddle;
-        Rectangle paddleRect;
-        int paddleSpeed = 0;
+
+        Paddle paddle;
 
         KeyboardState oldKeyboardState;
         KeyboardState newKeyboardState;
@@ -27,6 +26,7 @@ namespace MonoGameWindowsStarter
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            paddle = new Paddle(this);
         }
 
         /// <summary>
@@ -50,11 +50,6 @@ namespace MonoGameWindowsStarter
             );
             ballVelocity.Normalize();
 
-            paddleRect.X = 0;
-            paddleRect.Y = 0;
-            paddleRect.Width = 50;
-            paddleRect.Height = 500;
-
             base.Initialize();
         }
 
@@ -70,7 +65,7 @@ namespace MonoGameWindowsStarter
             // TODO: use this.Content to load your game content here
             // Don't use the .png
             ball = Content.Load<Texture2D>("ball");
-            paddle = Content.Load<Texture2D>("pixel");
+            paddle.LoadContent(Content);
         }
 
         /// <summary>
@@ -93,27 +88,7 @@ namespace MonoGameWindowsStarter
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            if(newKeyboardState.IsKeyDown(Keys.Up) && !oldKeyboardState.IsKeyDown(Keys.Up))
-            {
-                paddleSpeed -= 1;
-            }
-
-            if (newKeyboardState.IsKeyDown(Keys.Down) && !oldKeyboardState.IsKeyDown(Keys.Down))
-            {
-                paddleSpeed += 1;
-            }
-
-            paddleRect.Y += paddleSpeed;
-
-            if(paddleRect.Y < 0)
-            {
-                paddleRect.Y = 0;
-            }
-
-            if(paddleRect.Y > GraphicsDevice.Viewport.Height - paddleRect.Height)
-            {
-                paddleRect.Y = GraphicsDevice.Viewport.Height - paddleRect.Height;
-            }
+            paddle.Update(gameTime);
 
             ballPosition += (float)gameTime.ElapsedGameTime.TotalMilliseconds * ballVelocity;
 
@@ -169,7 +144,7 @@ namespace MonoGameWindowsStarter
                 100), 
                 Color.White
             ); //white means use colors as is
-            spriteBatch.Draw(paddle, paddleRect, Color.Red);
+            paddle.Draw(spriteBatch);
             spriteBatch.End();
 
             base.Draw(gameTime);

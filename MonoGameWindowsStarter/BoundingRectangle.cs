@@ -22,12 +22,9 @@ namespace MonoGameWindowsStarter
             this.Height = height;
         }
 
-        public bool CollidesWith(BoundingRectangle other)
+        public static implicit operator Rectangle(BoundingRectangle br)
         {
-            return !(this.X > other.X + other.Width
-                || this.X + this.Width < other.X
-                || this.Y > other.Y + other.Width
-                || this.Y + this.Width < other.Y);
+            return new Rectangle((int)br.X, (int)br.Y, (int)br.Width, (int)br.Height);
         }
     }
 }
